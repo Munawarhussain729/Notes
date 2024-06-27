@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import Navbar from '../../components/Navbar/Navbar'
 import PasswordInput from '../../components/Input/PasswordInput'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { validateEmail } from '../../utilities/helper'
+import { toast } from 'react-toastify'
+import axiosInstance from '../../utilities/axiosInstance'
 
 function Signup() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  
-  const handleSignup = (e)=>{
+  const navigate = useNavigate()
+
+  const handleSignup = async (e) => {
     e.preventDefault()
 
     if (!name) {
@@ -26,6 +29,30 @@ function Signup() {
       return
     }
     setError("")
+    try {
+      const response = await axiosInstance.post("/auth/create-account", {
+        fullName: name,
+        email: email,
+        password: password
+      })
+
+      if (response.data && response.data.error) {
+        toast.error(response.data.message)
+      }
+      
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken)
+        toast.success('Congratualtions! Signup successfull')
+        navigate('/login')
+      }
+    } catch (error) {
+      console.error("Login failed error: ", error)
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message)
+      } else {
+        toast.error('An unexpected error occurred. Please try again!')
+      }
+    }
   }
   return (
     <div>
