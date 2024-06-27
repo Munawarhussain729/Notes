@@ -13,9 +13,9 @@ router.get('/get-notes', authenticateToken, async (req, res) => {
     const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 })
 
     return res.json({
-      error:false,
+      error: false,
       notes,
-      message:'All notes retrieved successfully'
+      message: 'All notes retrieved successfully'
     })
 
   } catch (error) {
@@ -107,6 +107,40 @@ router.patch('/edit-note/:noteId', authenticateToken, async (req, res) => {
       error: true,
       message: 'Internal Server Error'
     })
+  }
+})
+
+router.delete('/:noteId', authenticateToken, async (req, res) => {
+  try {
+    const noteId = req.params.noteId
+    const { user } = req.user
+    if (!user) {
+      return res.status(400).json({
+        error: true,
+        message: 'Please signIn first'
+      })
+    }
+    const note = await Note.findOne({ _id: noteId, userId: user._id })
+    if (!note) {
+      return res.status(400).json({
+        error: true,
+        message: 'Note not found'
+      })
+    }
+
+    await Note.deleteOne({ id: noteId, userId: user._id })
+
+    return res.json({
+      error:false,
+      message:'Note deleted successfully'
+    })
+  } catch (error) {
+    console.error("4-notes delete error is: ", error);
+    return res.json({
+      error: true,
+      message: 'Internal Server Error'
+    })
+
   }
 })
 
