@@ -5,6 +5,7 @@ import PasswordInput from '../../components/Input/PasswordInput'
 import { validateEmail } from '../../utilities/helper'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import axiosInstance from '../../utilities/axiosInstance'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -24,20 +25,22 @@ function Login() {
     }
     setError("")
     try {
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
-        email,
-        password
+      const response = await axiosInstance.post("/auth/login", {
+        email: email,
+        password: password
       })
-      if (response.data && response.data.error) {
-        toast.error(response.data.message)
-        return
-      }
+   
       if (response.data && response.data.accessToken) {
         localStorage.setItem('accessToken', response.data.accessToken)
         navigate('/dashboard')
       }
     } catch (error) {
       console.error("Login failed error: ", error)
+      if(error.response && error.response.data && error.response.data.message){
+        toast.error(error.response.data.message)
+      }else{
+        toast.error('An unexpected error occurred. Please try again!')
+      }
     }
   }
   return (
