@@ -19,12 +19,24 @@ const NoteCard = ({
           <span className='text-xs text-slate-500'>{date}</span>
         </div>
 
-        <MdOutlinePushPin className={`icon-btn ${isPinned?'text-primary':'text-slate-300'}`} onClick={onPinNote} />
+        <MdOutlinePushPin className={`icon-btn ${isPinned ? 'text-primary' : 'text-slate-300'}`} onClick={onPinNote} />
       </div>
       <p className='text-xs text-slate-600 mt-2'> {content?.slice(0, 60)}</p>
 
       <div className='flex items-center justify-between mt-2'>
-        <div className='text-xs text-slate-500'>{tags}</div>
+        {
+          tags?.length > 0 && (
+            <div className='flex items-center gap-2 flex-wrap mt-2'>
+              {
+                tags.map((tag, index) => (
+                  <span key={index} className='flex items-center gap-2 text-xs text-slate-900 bg-slate-100 px-2 py-1 rounded'>
+                    #{tag?.replace(/\s+/g, '')}
+                  </span>
+                ))
+              }
+            </div>
+          )
+        }
 
         <div className='flex items-center gap-2'>
           <MdCreate
@@ -32,8 +44,8 @@ const NoteCard = ({
             onClick={onEdit}
           />
           <MdDelete
-          className='icon-btn hover:text-red-500'
-          onClick={onDelete}/>
+            className='icon-btn hover:text-red-500'
+            onClick={onDelete} />
         </div>
       </div>
     </div>
