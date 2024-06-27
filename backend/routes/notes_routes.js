@@ -131,8 +131,8 @@ router.delete('/:noteId', authenticateToken, async (req, res) => {
     await Note.deleteOne({ id: noteId, userId: user._id })
 
     return res.json({
-      error:false,
-      message:'Note deleted successfully'
+      error: false,
+      message: 'Note deleted successfully'
     })
   } catch (error) {
     console.error("4-notes delete error is: ", error);
@@ -143,5 +143,38 @@ router.delete('/:noteId', authenticateToken, async (req, res) => {
 
   }
 })
+
+router.patch('/updated-note-pinned/:noteId', authenticateToken, async (req, res) => {
+  const noteId = req.params.noteId
+  const { isPinned } = req.body
+  const { user } = req.user;
+
+  try {
+    const note = await Note.findOne({ _id: noteId, userId: user._id })
+    if (!note) {
+      return res.json({
+        error: false,
+        message: 'Note not found'
+      })
+    }
+    if (isPinned) note.isPinned = isPinned
+
+    await note.save()
+
+    return res.json({
+      error: false,
+      note,
+      message: 'Note updated successfully'
+    })
+
+  } catch (error) {
+    console.error("5-notes add-note error is: ", error);
+    return res.status(500).json({
+      error: true,
+      message: 'Internal Server Error'
+    })
+  }
+})
+
 
 module.exports = router
