@@ -3,7 +3,29 @@ const Note = require('./../models/notes_model')
 const { authenticateToken } = require('../utils')
 const router = express.Router()
 
+router.get('/get-notes', authenticateToken, async (req, res) => {
+  const { user } = req.user
+  try {
+    if (!user) {
+      return res.status(400).json({ error: true, message: 'Please signIn first' })
+    }
 
+    const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1 })
+
+    return res.json({
+      error:false,
+      notes,
+      message:'All notes retrieved successfully'
+    })
+
+  } catch (error) {
+    console.error("1) notes get-all error is: ", error);
+    return res.json({
+      error: true,
+      message: 'Internal Server Error'
+    })
+  }
+})
 
 router.post('/add-note', authenticateToken, async (req, res) => {
   const { title, content, tags } = req.body
@@ -58,32 +80,32 @@ router.patch('/edit-note/:noteId', authenticateToken, async (req, res) => {
 
   try {
     const note = await Note.findOne({ _id: noteId, userId: user._id })
-    
-    if(!note){
+
+    if (!note) {
       return res.json({
-        error:false,
-        message:'Note not found'
+        error: false,
+        message: 'Note not found'
       })
     }
 
-    if(title) note.title = title
-    if(content) note.content = content
-    if(tags) note.tags = tags
-    if(isPinned) note.isPinned = isPinned
+    if (title) note.title = title
+    if (content) note.content = content
+    if (tags) note.tags = tags
+    if (isPinned) note.isPinned = isPinned
 
     await note.save()
 
     return res.json({
-      error:false,
+      error: false,
       note,
-      message:'Note updated successfully'
+      message: 'Note updated successfully'
     })
 
-  } catch (error) { 
+  } catch (error) {
     console.log("Error is ", error);
     return res.json({
-      error:true,
-      message:'Internal Server Error'
+      error: true,
+      message: 'Internal Server Error'
     })
   }
 })
