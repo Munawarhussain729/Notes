@@ -34,7 +34,7 @@ function Home() {
         }}
       >
         <MdAdd className='text-[32px] text-white' />
-      </button>
+    </button>
 
       <Modal
         isOpen={openAddEditModel.isShown}

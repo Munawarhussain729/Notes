@@ -3,6 +3,8 @@ import Home from './pages/Home/Home'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Login from './pages/Login/Login'
 import Signup from './pages/Signup/Signup'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const routes = (
   <Router>
@@ -16,7 +18,10 @@ const routes = (
 function App() {
 
   return (
-    <div >{routes} </div>
+    <div >
+      <ToastContainer />
+      {routes}
+    </div>
   )
 }
 

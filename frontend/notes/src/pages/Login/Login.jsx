@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import Navbar from '../../components/Navbar/Navbar'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PasswordInput from '../../components/Input/PasswordInput'
-import { validateEmail } from '../../helper'
+import { validateEmail } from '../../utilities/helper'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const navigate = useNavigate()
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
     if (!validateEmail(email)) {
       setError('Please enter a valid email address')
       return
@@ -20,6 +23,22 @@ function Login() {
       return
     }
     setError("")
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/auth/login`, {
+        email,
+        password
+      })
+      if (response.data && response.data.error) {
+        toast.error(response.data.message)
+        return
+      }
+      if (response.data && response.data.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken)
+        navigate('/dashboard')
+      }
+    } catch (error) {
+      console.error("Login failed error: ", error)
+    }
   }
   return (
     <div>
