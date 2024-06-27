@@ -19,7 +19,7 @@ router.get('/get-notes', authenticateToken, async (req, res) => {
     })
 
   } catch (error) {
-    console.error("1) notes get-all error is: ", error);
+    console.error("1-notes get-all error is: ", error);
     return res.json({
       error: true,
       message: 'Internal Server Error'
@@ -57,7 +57,7 @@ router.post('/add-note', authenticateToken, async (req, res) => {
       message: 'Note Added successfully'
     })
   } catch (error) {
-    console.log("Error is ", error);
+    console.error("2-notes add-note error is: ", error);
     return res.status(500).json({
       error: true,
       message: 'Internal Server Error'
@@ -102,7 +102,7 @@ router.patch('/edit-note/:noteId', authenticateToken, async (req, res) => {
     })
 
   } catch (error) {
-    console.log("Error is ", error);
+    console.error("3-notes edit-note error is: ", error);
     return res.json({
       error: true,
       message: 'Internal Server Error'
