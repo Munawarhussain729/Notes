@@ -1,6 +1,7 @@
 const express = require('express')
 const jwt = require("jsonwebtoken")
 const User = require('./../models/user_model');
+const { authenticateToken } = require('../utils');
 const router = express.Router()
 
 router.post('/create-account', async (req, res) => {
@@ -47,6 +48,31 @@ router.post('/create-account', async (req, res) => {
 
 })
 
+router.get('/get-user', authenticateToken, async (req, res) => {
+  try {
+    const { user } = req.user
+    const isUser = await User.findOne({ _id: user._id })
+    if (!isUser) {
+      return res.status(404).json({
+        error: true,
+        message: 'No user found'
+      })
+    } 
+
+    return res.json({
+      error: false,
+      user: isUser,
+      message: 'User fetched successfully'
+    })
+
+  } catch (error) {
+    console.error("3-users get user error is ", error)
+    return res.json({
+      error: true,
+      message: 'Internal Server Error'
+    })
+  }
+})
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body
@@ -59,7 +85,7 @@ router.post('/login', async (req, res) => {
     }
     const userInfo = await User.findOne({ email: email })
     if (!userInfo) {
-      return res.json({
+      return res.status(404).json({
         error: true,
         message: 'User not found'
       })
