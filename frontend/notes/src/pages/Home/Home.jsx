@@ -54,8 +54,8 @@ function Home() {
     try {
       const noteId = noteDetail._id
       const response = await axiosInstance.delete(`/notes/${noteId}`)
-      if (response.data && response.data.note) {
-        toast.success('Note deleted successfully')
+      if (response.data && response.data.message) {
+        toast.success(response.data.message)
         getAllNotes()
       }
     } catch (error) {
@@ -88,7 +88,7 @@ function Home() {
               tags={note.tags}
               isPinned={note.isPinned}
               onEdit={() => handleEdit(note)}
-              onDelete={() => { }}
+              onDelete={() => handleDeleteNote(note)}
               onPinNote={() => { }}
             />
           ))}
