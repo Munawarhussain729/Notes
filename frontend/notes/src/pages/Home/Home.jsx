@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../utilities/axiosInstance'
 import { formatDate } from '../../utilities/helper'
 import { toast } from 'react-toastify'
+import EmptyCard from '../../components/EmptyCard/EmptyCard'
 Modal.setAppElement('#root');
 function Home() {
   const [openAddEditModel, setOpenAddEditModel] = useState({
@@ -98,7 +99,8 @@ function Home() {
     <div>
       <Navbar userInfo={userInfo} />
       <div className='container px-5 md:px-0 py-8 mx-auto'>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8'>
+       {allNotes.length > 0 ? (
+         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8'>
           {allNotes.map((note, index) => (
             <NoteCard
               key={index}
@@ -112,7 +114,9 @@ function Home() {
               onPinNote={() => handlePinNote(note)}
             />
           ))}
-        </div>
+        </div>):(
+          <EmptyCard/>
+        )}
       </div>
       <button
         className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"

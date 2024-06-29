@@ -29,10 +29,11 @@ function Login() {
         email: email,
         password: password
       })
-   
       if (response.data && response.data.accessToken) {
         localStorage.setItem('accessToken', response.data.accessToken)
         navigate('/dashboard')
+      }else{
+        toast.error(response?.data?.message)
       }
     } catch (error) {
       console.error("Login failed error: ", error)
