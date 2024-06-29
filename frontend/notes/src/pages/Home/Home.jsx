@@ -62,7 +62,27 @@ function Home() {
       if (error.response &&
         error.response.data &&
         error.response.data.message) {
-          toast.error(error.response.data.message)
+        toast.error(error.response.data.message)
+      }
+      console.log("An unexpected error occure. Please try agian!")
+    }
+  }
+
+  const handlePinNote = async (noteDetail) => {
+    try {
+      const noteId = noteDetail._id
+      const response = await axiosInstance.patch(`/notes/updated-note-pinned/${noteId}`,{
+        isPinned:!noteDetail.isPinned
+      })
+      if (response.data && response.data.message) {
+        toast.success(response.data.message)
+        getAllNotes()
+      }
+    } catch (error) {
+      if (error.response &&
+        error.response.data &&
+        error.response.data.message) {
+        toast.error(error.response.data.message)
       }
       console.log("An unexpected error occure. Please try agian!")
     }
@@ -89,7 +109,7 @@ function Home() {
               isPinned={note.isPinned}
               onEdit={() => handleEdit(note)}
               onDelete={() => handleDeleteNote(note)}
-              onPinNote={() => { }}
+              onPinNote={() => handlePinNote(note)}
             />
           ))}
         </div>
