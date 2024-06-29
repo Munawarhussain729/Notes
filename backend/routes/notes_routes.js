@@ -128,7 +128,7 @@ router.delete('/:noteId', authenticateToken, async (req, res) => {
       })
     }
 
-    await Note.deleteOne({ id: noteId, userId: user._id })
+    await Note.deleteOne({ _id: noteId, userId: user._id })
 
     return res.json({
       error: false,
@@ -157,7 +157,11 @@ router.patch('/updated-note-pinned/:noteId', authenticateToken, async (req, res)
         message: 'Note not found'
       })
     }
-    if (isPinned) note.isPinned = isPinned
+    if (isPinned){
+      note.isPinned = isPinned
+    }else{
+      note.isPinned = false
+    }
 
     await note.save()
 
