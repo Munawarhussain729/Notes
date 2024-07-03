@@ -9,6 +9,8 @@ import axiosInstance from '../../utilities/axiosInstance'
 import { formatDate } from '../../utilities/helper'
 import { toast } from 'react-toastify'
 import EmptyCard from '../../components/EmptyCard/EmptyCard'
+import AddNoteImg from '../../assets/add-note.svg'
+
 Modal.setAppElement('#root');
 function Home() {
   const [openAddEditModel, setOpenAddEditModel] = useState({
@@ -115,7 +117,7 @@ function Home() {
             />
           ))}
         </div>):(
-          <EmptyCard/>
+          <EmptyCard imgSrc={AddNoteImg} message={`Start creating your first note! Click the 'Add' to write down your thoughts and ideas. Lets get started'`}/>
         )}
       </div>
       <button
