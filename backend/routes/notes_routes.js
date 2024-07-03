@@ -180,7 +180,7 @@ router.patch('/updated-note-pinned/:noteId', authenticateToken, async (req, res)
   }
 })
 
-router.get('/search-note', authenticateToken, async (req, res) => {
+router.get('/search-notes', authenticateToken, async (req, res) => {
   const { user } = req.user
   const { query } = req.query
 
