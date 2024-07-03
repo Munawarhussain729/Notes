@@ -157,9 +157,9 @@ router.patch('/updated-note-pinned/:noteId', authenticateToken, async (req, res)
         message: 'Note not found'
       })
     }
-    if (isPinned){
+    if (isPinned) {
       note.isPinned = isPinned
-    }else{
+    } else {
       note.isPinned = false
     }
 
@@ -173,6 +173,47 @@ router.patch('/updated-note-pinned/:noteId', authenticateToken, async (req, res)
 
   } catch (error) {
     console.error("5-notes add-note error is: ", error);
+    return res.status(500).json({
+      error: true,
+      message: 'Internal Server Error'
+    })
+  }
+})
+
+router.get('/search-note', authenticateToken, async (req, res) => {
+  const { user } = req.user
+  const { query } = req.query
+
+  if(!user){
+    return res.status(400).json({
+      error: true,
+      message: 'Sign in required'
+    })
+  }
+  if (!query) {
+    return res.status(400).json({
+      error: true,
+      message: 'Search query is required'
+    })
+  }
+
+  try {
+    const matchingNotes = await Note.find({
+      userId: user._id,
+      $or: [
+        { title: { $regex: new RegExp(query, "i") } },
+        { content: { $regex: new RegExp(query, "i") } } //this i flag makes the search case-insensitive
+      ]
+    })
+
+    return res.json({
+      error: false,
+      notes: matchingNotes,
+      message: "Notes matching the search query received successfully",
+    })
+
+  } catch (error) {
+    console.log("6-notes search query error is: ", error);
     return res.status(500).json({
       error: true,
       message: 'Internal Server Error'
