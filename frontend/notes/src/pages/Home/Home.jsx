@@ -10,6 +10,7 @@ import { formatDate } from '../../utilities/helper'
 import { toast } from 'react-toastify'
 import EmptyCard from '../../components/EmptyCard/EmptyCard'
 import AddNoteImg from '../../assets/add-note.svg'
+import NoData from '../../assets/search-icon.svg'
 
 Modal.setAppElement('#root');
 function Home() {
@@ -21,6 +22,8 @@ function Home() {
   const navigate = useNavigate()
   const [userInfo, setUserInfo] = useState()
   const [allNotes, setAllNotes] = useState([])
+  const [isSearch, setIsSearch] = useState(false)
+
 
   const getUserInfo = async () => {
     try {
@@ -74,8 +77,8 @@ function Home() {
   const handlePinNote = async (noteDetail) => {
     try {
       const noteId = noteDetail._id
-      const response = await axiosInstance.patch(`/notes/updated-note-pinned/${noteId}`,{
-        isPinned:!noteDetail.isPinned
+      const response = await axiosInstance.patch(`/notes/updated-note-pinned/${noteId}`, {
+        isPinned: !noteDetail.isPinned
       })
       if (response.data && response.data.message) {
         toast.success(response.data.message)
@@ -91,33 +94,63 @@ function Home() {
     }
   }
 
+  const handleSearch = async ({ query }) => {
+    try {
+      const response = await axiosInstance.get("/notes/search-notes", {
+        params: { query }
+      })
+      if (response.data && response.data.notes) {
+        setIsSearch(true)
+        setAllNotes(response.data.notes)
+      }
+    } catch (error) {
+      if (error.response &&
+        error.response.data &&
+        error.response.data.message) {
+        toast.error(error.response.data.message)
+      }
+      console.log("An unexpected error occure in search ", error)
+    }
+  }
+
+  const handleClearSearch = () => {
+    setIsSearch(false)
+    getAllNotes()
+  }
   useEffect(() => {
     getUserInfo()
     getAllNotes()
     return () => { }
   }, [])
 
+
   return (
     <div>
-      <Navbar userInfo={userInfo} />
+      <Navbar
+        userInfo={userInfo}
+        handleSearch={handleSearch}
+        onClearSearch={handleClearSearch}
+      />
       <div className='container px-5 md:px-0 py-8 mx-auto'>
-       {allNotes.length > 0 ? (
-         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8'>
-          {allNotes.map((note, index) => (
-            <NoteCard
-              key={index}
-              title={note.title}
-              date={formatDate(note.createdOn)}
-              content={note.content}
-              tags={note.tags}
-              isPinned={note.isPinned}
-              onEdit={() => handleEdit(note)}
-              onDelete={() => handleDeleteNote(note)}
-              onPinNote={() => handlePinNote(note)}
-            />
-          ))}
-        </div>):(
-          <EmptyCard imgSrc={AddNoteImg} message={`Start creating your first note! Click the 'Add' to write down your thoughts and ideas. Lets get started'`}/>
+        {allNotes.length > 0 ? (
+          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8'>
+            {allNotes.map((note, index) => (
+              <NoteCard
+                key={index}
+                title={note.title}
+                date={formatDate(note.createdOn)}
+                content={note.content}
+                tags={note.tags}
+                isPinned={note.isPinned}
+                onEdit={() => handleEdit(note)}
+                onDelete={() => handleDeleteNote(note)}
+                onPinNote={() => handlePinNote(note)}
+              />
+            ))}
+          </div>) : (
+          <EmptyCard
+            imgSrc={isSearch ? NoData : AddNoteImg}
+            message={isSearch ? 'Oops! No notes found matching your search.' : `Start creating your first note! Click the 'Add' to write down your thoughts and ideas. Lets get started'`} />
         )}
       </div>
       <button
